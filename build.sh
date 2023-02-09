@@ -1,6 +1,5 @@
 set -o errexit  # exit on error
 
-cd config
 
 pip install -r requirements.txt
 
