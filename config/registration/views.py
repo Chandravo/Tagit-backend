@@ -51,14 +51,6 @@ class login(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-# def index(request):
-#     qr=qrcode.make('www.google.com')
-#     stream = io.BytesIO()
-#     qr.save(stream, format="PNG")
-#     qr_bytes=qr_bytes = stream.getvalue()
-#     cloudinary.uploader.upload(qr_bytes, public_id="hehe_qr", unique_filename = False, overwrite=True, folder="TagIt")
-    
-#     return render(request,"<h1>hello</h1>")
 
 def check(request):
     return render (request,'1.html')

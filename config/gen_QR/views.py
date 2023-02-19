@@ -2,12 +2,12 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate
 from django.core.mail import send_mail
 from django.conf import settings
+import requests
 from .models import QR
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
 from rest_framework.permissions import IsAuthenticated
 
 import random,string
@@ -28,7 +28,8 @@ class generateQR(APIView):
         key = ''.join(random.choice(string.ascii_letters) for _ in range(50))
         while QR.objects.filter(key=key).exists():
             key = ''.join(random.choice(string.ascii_letters) for _ in range(50))
-        qr=qrcode.make(('https://' if request.is_secure() else 'http://') + request.META['HTTP_HOST'] + '/info/' + key)
+        target = ('https://' if request.is_secure() else 'http://') + request.META['HTTP_HOST'] + '/info/' + key
+        qr=qrcode.make(target)
         stream = io.BytesIO()
         qr.save(stream, format="PNG")
         qr_bytes=qr_bytes = stream.getvalue()
@@ -37,15 +38,58 @@ class generateQR(APIView):
         # print(upload)
         scURL = upload['secure_url']
         
-        user_qr = QR.objects.create(user=user, name=name, description=description, key=key, qr=scURL)
+        user_qr = QR.objects.create(user=user, name=name, description=description, key=key, qr=scURL, target=target)
         user_qr.save()
         return Response({'url':scURL,'status': 'success'})
+    
+def scanQR(request, key):
+    scanned_qr = QR.objects.filter(key=key).first()
+    # x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')    
+    # if x_forwarded_for:
+    #     ip = x_forwarded_for.split(',')[0]
+    # else:
+    #     ip = request.META.get('REMOTE_ADDR')
+    
+    ip = "117.203.246.41"
+    ip_response = requests.get('http://ip-api.com/json/'+ip)  
+    ip_response = ip_response.json()
+    location_country = ip_response['country']
+    location_region = ip_response['regionName']
+    location_city = ip_response['city']
+    
+    context = {
+        "ip": ip,
+        "location_country": location_country,
+        "location_region": location_region,
+        "location_city": location_city,
+        "qr": scanned_qr.qr,
+        "user": scanned_qr.user.email,
+    }
+    
+    return render(request, '1.html', context)
 
-# def index(request):
-#     qr=qrcode.make('www.google.com')
-#     stream = io.BytesIO()
-#     qr.save(stream, format="PNG")
-#     qr_bytes=qr_bytes = stream.getvalue()
-#     cloudinary.uploader.upload(qr_bytes, public_id="hehe_qr", unique_filename = False, overwrite=True, folder="TagIt")
-
-#     return render(request,"<h1>hello</h1>")
+# class scanQR(APIView):
+#     def get(self, request, key):
+#         qr = QR.objects.filter(key=key).first().qr
+#     # x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')    
+#     # if x_forwarded_for:
+#     #     ip = x_forwarded_for.split(',')[0]
+#     # else:
+#     #     ip = request.META.get('REMOTE_ADDR')
+    
+#     ip = "117.203.246.41"
+#     ip_response = requests.get('http://ip-api.com/json/'+ip)  
+#     ip_response = ip_response.json()
+#     location_country = ip_response['country']
+#     location_region = ip_response['regionName']
+#     location_city = ip_response['city']
+    
+#     context = {
+#         "ip": ip,
+#         "location_country": location_country,
+#         "location_region": location_region,
+#         "location_city": location_city,
+#         "qr": qr,
+#     }
+    
+#     return render(request, 'info.html', context)

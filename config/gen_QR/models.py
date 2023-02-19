@@ -7,6 +7,7 @@ class QR(models.Model):
     name = models.CharField(max_length=200, null=True, blank=True)
     description = models.TextField(null=True,blank=True)
     qr = models.URLField(max_length=1000, null=False, blank=False)
+    target = models.URLField(max_length=1000, null=False, blank=False, default='')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False, related_name='qr')
     key = models.CharField(max_length=50, unique=True, null=False, blank=False)
     def __str__(self):
