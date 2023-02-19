@@ -44,13 +44,13 @@ class generateQR(APIView):
     
 def scanQR(request, key):
     scanned_qr = QR.objects.filter(key=key).first()
-    # x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')    
-    # if x_forwarded_for:
-    #     ip = x_forwarded_for.split(',')[0]
-    # else:
-    #     ip = request.META.get('REMOTE_ADDR')
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')    
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
     
-    ip = "117.203.246.41"
+    # ip = "117.203.246.41"
     ip_response = requests.get('http://ip-api.com/json/'+ip)  
     ip_response = ip_response.json()
     location_country = ip_response['country']
