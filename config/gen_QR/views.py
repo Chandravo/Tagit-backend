@@ -4,6 +4,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 import requests
 from .models import QR
+from .serializers import QRSerializer
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -93,3 +94,22 @@ def scanQR(request, key):
 #     }
     
 #     return render(request, 'info.html', context)
+
+
+class get_qrs(APIView):
+    permission_classes = [IsAuthenticated,]
+
+    def get(self, request):
+        user=request.user
+        qrs = QR.objects.filter(user=user).all()
+        # qr_list = []
+        # for qr in qrs:
+        #     qr_list.append({
+        #         "name": qr.name,
+        #         "description": qr.description,
+        #         "key": qr.key,
+        #         "qr": qr.qr,
+        #         "target": qr.target,
+        #     })
+        qr_list = QRSerializer(qrs, many=True)
+        return Response(qr_list.data, status=status.HTTP_200_OK)
