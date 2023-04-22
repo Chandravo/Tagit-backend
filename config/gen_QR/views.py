@@ -12,6 +12,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 import random,string
+from registration.models import User
 
 import io
 from PIL import Image
@@ -20,10 +21,10 @@ import cloudinary, cloudinary.uploader, cloudinary.api
 config=cloudinary.config(secure=True)
 
 class generateQR(APIView):
-    permission_classes = [IsAuthenticated,]
+    # permission_classes = [IsAuthenticated,]
 
     def post(self, request):
-        user=request.user
+        user=User.objects.all().first()
         name = request.data.get('name')
         description = request.data.get('description')
         key = ''.join(random.choice(string.ascii_letters) for _ in range(50))
