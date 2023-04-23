@@ -172,7 +172,7 @@ class getScanHistory(APIView):
         qr=QR.objects.filter(key=key).first()
         # print(qr)
         # print("hehe")
-        scans = Scan.objects.filter(qr=qr).all()
+        scans = Scan.objects.filter(qr=qr).all().order_by('-time')
         # print(scans)
         # scan_list = ScanSerializer(scans, many=True)
         scan_list=[]
