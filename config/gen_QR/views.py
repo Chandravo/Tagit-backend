@@ -24,7 +24,8 @@ class generateQR(APIView):
     # permission_classes = [IsAuthenticated,]
 
     def post(self, request):
-        user=User.objects.all().first()
+        user=User.objects.filter(email="tijil@gmail.com").first()
+        print(user.phone)
         name = request.data.get('name')
         description = request.data.get('description')
         key = ''.join(random.choice(string.ascii_letters) for _ in range(50))
@@ -98,10 +99,10 @@ def scanQR(request, key):
 
 
 class get_qrs(APIView):
-    permission_classes = [IsAuthenticated,]
+    # permission_classes = [IsAuthenticated,]
 
     def get(self, request):
-        user=request.user
+        user=User.objects.filter(email="tijil@gmail.com").first()
         qrs = QR.objects.filter(user=user).all()
         # qr_list = []
         # for qr in qrs:
