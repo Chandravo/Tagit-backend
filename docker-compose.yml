@@ -16,6 +16,5 @@ services:
       - redis
     volumes:
       - ./config/database/:/app/database/
-      - ./config/media/:/app/media/
-      - ./config/static/:/app/static/
+      - ./config/static/:/app/config/static/
     restart: always
