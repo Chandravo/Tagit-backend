@@ -168,7 +168,12 @@ class getScanHistory(APIView):
     def post(self,request):
         user=User.objects.filter(email="chandravob2003@gmail.com").first()
         key = request.data.get('key')
-        scans = Scan.objects.filter(key=key).all()
+        # print(key)  
+        qr=QR.objects.filter(key=key).first()
+        # print(qr)
+        # print("hehe")
+        scans = Scan.objects.filter(qr=qr).all()
+        # print(scans)
         scan_list = ScanSerializer(scans, many=True)
         return Response(scan_list.data, status=status.HTTP_200_OK)
         
