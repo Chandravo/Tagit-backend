@@ -20,6 +20,7 @@ class orders(models.Model):
     order_date = models.DateTimeField(auto_now_add=True)
     order_status = models.CharField(max_length=100,default='pending')
     product_type = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.order_id

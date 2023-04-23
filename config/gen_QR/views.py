@@ -150,7 +150,7 @@ class get_qrs(APIView):
 
     def get(self, request):
         user=User.objects.filter(email="chandravob2003@gmail.com").first()
-        qrs = QR.objects.filter(user=user).all()
+        qrs = QR.objects.filter(user=user).all().order_by('-created_at')
         # qr_list = []
         # for qr in qrs:
         #     qr_list.append({
