@@ -6,6 +6,8 @@ attrs==22.2.0
 Brotli==1.0.9
 certifi==2022.12.7
 charset-normalizer==2.1.1
+channels==4.0.0
+channels-redis==4.1.0
 cloudinary==1.31.0
 daphne==4.0.0
 defusedxml==0.7.1
