@@ -4,7 +4,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 import requests
 from .models import QR, Scan
-from .serializers import QRSerializer
+from .serializers import *
 
 from django.core.mail import EmailMessage
 
@@ -162,3 +162,15 @@ class get_qrs(APIView):
         #     })
         qr_list = QRSerializer(qrs, many=True)
         return Response(qr_list.data, status=status.HTTP_200_OK)
+    
+class getScanHistory(APIView):
+    
+    def post(self,request):
+        user=User.objects.filter(email="chandravob2003@gmail.com").first()
+        key = request.data.get('key')
+        scans = Scan.objects.filter(key=key).all()
+        scan_list = ScanSerializer(scans, many=True)
+        return Response(scan_list.data, status=status.HTTP_200_OK)
+        
+        
+        
