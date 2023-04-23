@@ -1,6 +1,6 @@
 from django.db import models
 from registration.models import User
-
+from django.utils import timezone
 # Create your models here.
 
 class QR(models.Model):
@@ -24,7 +24,11 @@ class orders(models.Model):
     def __str__(self):
         return self.order_id
     
-class scan(models.Model):
+class Scan(models.Model):
     qr=models.ForeignKey(QR, on_delete=models.CASCADE)
     location = models.CharField(max_length=500)
-    time = models.DateTimeField(auto_now_add=True)
+    time = models.DateTimeField(auto_now_add=False,null=True, blank=True)
+    
+    def save(self, *args, **kwargs):
+        self.time = timezone.localtime(timezone.now())
+        super(Scan, self).save(*args, **kwargs)

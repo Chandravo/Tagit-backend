@@ -4,18 +4,107 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lmoa</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <title>TagIT</title>
 </head>
 <body>
-    <h1>The qr is</h1> <br>
-    <img src='{{qr}}' alt="qr">
-    <h2>User = {{user}}</h2>
-    <h3>You are visiting from :</h3>
-    <ul>
-        <li>IP Address : {{ip}}</li>
-        <li>City: {{ location_city }}</li>
-        <li>Region: {{location_region}}</li>
-        <li>Country: {{ location_country }}</li>
-    </ul>
+    <center>
+    {% if user.is_anonymous %}
+    <h1>Thank You for finding the luggage</h1> <br>
+    <!-- <img src='{{qr}}' alt="qr"> -->
+    <h2>Email of ower: {{email}}</h2>
+    <br><br>
+    <h3>Chat with the owner of the luggage </h3>
+    <br>
+    {% else %}
+    <h3>Chat with the finder of your luggage </h3>
+    <br>
+    {% endif %}
+    </center>
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="col-6">
+                <form>
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1" class="h4 pt-5">Chatroom</label>
+                        <textarea class="form-control" id="chat-text" rows="10" disabled></textarea><br>
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control" id="input" type="text"></br>
+                    </div>
+                    <input class="btn btn-secondary btn-lg btn-block" id="submit" type="button" value="Send">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- {{ request.user.username|json_script:"user_username" }} -->
+    {{ key|json_script:"room-name" }}
+
+    {% if user.is_anonymous %}
+    {{ "Finder"|json_script:"user_username" }}
+    {% else %}
+    {{ "Owner"|json_script:"user_username" }}
+    {% endif %}
+
+    <script>
+        const user_username = JSON.parse(document.getElementById('user_username').textContent);
+        document.querySelector('#submit').onclick = function (e) {
+            const messageInputDom = document.querySelector('#input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'username': user_username,
+            }));
+            messageInputDom.value = '';
+        };
+
+
+
+
+        const roomName = JSON.parse(document.getElementById('room-name').textContent);
+
+        const chatSocket = new WebSocket(
+            'ws://' +
+            window.location.host +
+            '/ws/chat/' +
+            roomName +
+            '/'
+        );
+
+        chatSocket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+            console.log(data)
+            document.querySelector('#chat-text').value += (data.username + ': ' + data.message + '\n')
+        }
+
+        var input = document.getElementById("input");
+
+        // Execute a function when the user presses a key on the keyboard
+        input.addEventListener("keypress", function(event) {
+        // If the user presses the "Enter" key on the keyboard
+        if (event.key === "Enter") {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            // Trigger the button element with a click
+            document.getElementById("submit").click();
+        }
+        }); 
+    </script>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous">
+    </script>
+
+    
 </body>
 </html>

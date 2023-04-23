@@ -5,5 +5,6 @@ urlpatterns =[
     path('generate/', views.generateQR.as_view()),
     path('info/<str:key>/', views.scanQR),
     path('getQRs/',views.get_qrs.as_view()),
+    # path('chat/<str:room_name>/', views.chat_room, name='chat_room')
     # path('', views.index, name='index'),
 ]
