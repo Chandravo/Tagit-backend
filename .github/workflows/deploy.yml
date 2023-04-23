@@ -24,5 +24,4 @@ jobs:
           
           script: |
             cd ${{secrets.REPOSITORY_PATH}}
-            cd server
             echo ${{secrets.VM_PASSWORD}} | sudo -S make redeploy
