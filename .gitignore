@@ -54,9 +54,6 @@ venv
 privkey.pem
 cert.pem
 
-#docker-compose file
-docker-compose.yml
-
 #error logs
 logs
 YOLO
@@ -106,6 +103,7 @@ database
 #virtual environment
 venv
 
+env
 
 
 #media files root
@@ -115,9 +113,6 @@ venv
 #ssl certificates
 privkey.pem
 cert.pem
-
-#docker-compose file
-docker-compose.yml
 
 #error logs
 logs
