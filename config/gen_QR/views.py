@@ -174,8 +174,14 @@ class getScanHistory(APIView):
         # print("hehe")
         scans = Scan.objects.filter(qr=qr).all()
         # print(scans)
-        scan_list = ScanSerializer(scans, many=True)
-        return Response(scan_list.data, status=status.HTTP_200_OK)
+        # scan_list = ScanSerializer(scans, many=True)
+        scan_list=[]
+        for scan in scans:
+            scan_list.append({
+                "location": scan.location,
+                "time": scan.time.strftime("%d/%m/%Y, %H:%M:%S"),
+            })
+        return Response(scan_list, status=status.HTTP_200_OK)
         
         
         
