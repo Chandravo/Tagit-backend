@@ -5,8 +5,9 @@ from django.conf import settings
 import requests
 from .models import QR, Scan
 from .serializers import *
-
-from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.core.mail import EmailMultiAlternatives, EmailMessage
 
 
 from rest_framework.views import APIView
@@ -107,12 +108,15 @@ def send_email(context):
     mess_details = 'Location : '+context['location']+'\nRegion : '+context['region']+'\nCountry : '+context['country']+'\nTime : '+(context['time'].strftime("%d/%m/%Y, %H:%M:%S"))+'\n'
     mess_end = "Chat with your finder here : "+context['chat_link']
     mess=mess_start+mess_details+mess_end
-    email_message = EmailMessage(
+    html_message = render_to_string('mail.html', context)
+    messg=strip_tags(html_message)
+    email_message = EmailMultiAlternatives(
         sub,
-        mess,
+        messg,
         settings.EMAIL_HOST_USER,
         [context['email']]
     )
+    email_message.attach_alternative(html_message, "text/html")
     print("email sent to "+context['email'])
     email_message.send()
 
