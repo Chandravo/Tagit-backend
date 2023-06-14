@@ -10,6 +10,7 @@ class QR(models.Model):
     target = models.URLField(max_length=1000, null=False, blank=False, default='')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False, related_name='qr')
     key = models.CharField(max_length=50, unique=True, null=False, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.user.email + '_' + self.name
     
@@ -20,6 +21,7 @@ class orders(models.Model):
     order_date = models.DateTimeField(auto_now_add=True)
     order_status = models.CharField(max_length=100,default='pending')
     product_type = models.CharField(max_length=100)
+    
 
     def __str__(self):
         return self.order_id

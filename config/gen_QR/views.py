@@ -5,8 +5,9 @@ from django.conf import settings
 import requests
 from .models import QR, Scan
 from .serializers import *
-
-from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.core.mail import EmailMultiAlternatives, EmailMessage
 
 
 from rest_framework.views import APIView
@@ -65,15 +66,15 @@ def scanQR(request, key):
         }
         return render(request, '1.html', context)
         
-    # x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')    
-    # if x_forwarded_for:
-    #     ip = x_forwarded_for.split(',')[0]
-    # else:
-    #     ip = request.META.get('REMOTE_ADDR')
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')    
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
     my_date = timezone.now()
     print(my_date.tzinfo)
 
-    ip = "117.203.246.41"
+    # ip = "117.203.246.41"
     ip_response = requests.get('http://ip-api.com/json/'+ip)  
     ip_response = ip_response.json()
     location_country = ip_response['country']
@@ -107,12 +108,15 @@ def send_email(context):
     mess_details = 'Location : '+context['location']+'\nRegion : '+context['region']+'\nCountry : '+context['country']+'\nTime : '+(context['time'].strftime("%d/%m/%Y, %H:%M:%S"))+'\n'
     mess_end = "Chat with your finder here : "+context['chat_link']
     mess=mess_start+mess_details+mess_end
-    email_message = EmailMessage(
+    html_message = render_to_string('mail.html', context)
+    messg=strip_tags(html_message)
+    email_message = EmailMultiAlternatives(
         sub,
-        mess,
+        messg,
         settings.EMAIL_HOST_USER,
         [context['email']]
     )
+    email_message.attach_alternative(html_message, "text/html")
     print("email sent to "+context['email'])
     email_message.send()
 
@@ -150,7 +154,7 @@ class get_qrs(APIView):
 
     def get(self, request):
         user=User.objects.filter(email="chandravob2003@gmail.com").first()
-        qrs = QR.objects.filter(user=user).all()
+        qrs = QR.objects.filter(user=user).all().order_by('-created_at')
         # qr_list = []
         # for qr in qrs:
         #     qr_list.append({
@@ -168,9 +172,20 @@ class getScanHistory(APIView):
     def post(self,request):
         user=User.objects.filter(email="chandravob2003@gmail.com").first()
         key = request.data.get('key')
-        scans = Scan.objects.filter(key=key).all()
-        scan_list = ScanSerializer(scans, many=True)
-        return Response(scan_list.data, status=status.HTTP_200_OK)
+        # print(key)  
+        qr=QR.objects.filter(key=key).first()
+        # print(qr)
+        # print("hehe")
+        scans = Scan.objects.filter(qr=qr).all().order_by('-time')
+        # print(scans)
+        # scan_list = ScanSerializer(scans, many=True)
+        scan_list=[]
+        for scan in scans:
+            scan_list.append({
+                "location": scan.location,
+                "time": scan.time.strftime("%d/%m/%Y, %H:%M:%S"),
+            })
+        return Response(scan_list, status=status.HTTP_200_OK)
         
         
         
