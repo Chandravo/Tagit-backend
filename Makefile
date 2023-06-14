@@ -1,8 +1,8 @@
 create:
-	sudo docker-compose up --build -d
+	sudo docker compose up --build -d
 
 destroy:
-	sudo docker-compose down
+	sudo docker compose down
 
 recreateall:
 	make destroy
