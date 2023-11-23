@@ -29,7 +29,7 @@ class generateQR(APIView):
     # permission_classes = [IsAuthenticated,]
 
     def post(self, request):
-        user=User.objects.filter(email="chandravob2003@gmail.com").first()
+        user=User.objects.filter(email="yashvingoyal9828@gmail.com").first()
         print(user.phone)
         name = request.data.get('name')
         description = request.data.get('description')
