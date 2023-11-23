@@ -153,7 +153,7 @@ class get_qrs(APIView):
     # permission_classes = [IsAuthenticated,]
 
     def get(self, request):
-        user=User.objects.filter(email="chandravob2003@gmail.com").first()
+        user=User.objects.filter(email="yashvingoyal9828@gmail.com").first()
         qrs = QR.objects.filter(user=user).all().order_by('-created_at')
         # qr_list = []
         # for qr in qrs:
@@ -170,7 +170,7 @@ class get_qrs(APIView):
 class getScanHistory(APIView):
     
     def post(self,request):
-        user=User.objects.filter(email="chandravob2003@gmail.com").first()
+        user=User.objects.filter(email="yashvingoyal9828@gmail.com").first()
         key = request.data.get('key')
         # print(key)  
         qr=QR.objects.filter(key=key).first()
